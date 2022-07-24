@@ -30,7 +30,7 @@ public class ExcelReader {
         System.out.printf("写内容前剩余内存:%d", freeMemory1);
         System.out.println();
         try (InputStream inputStream = Files.newInputStream(excelFile, StandardOpenOption.READ)) {
-            Workbook workbook = StreamingReader.builder().rowCacheSize(1000).bufferSize(8192).open(inputStream);
+            Workbook workbook = StreamingReader.builder().rowCacheSize(1000).bufferSize(1024*10).open(inputStream);
             Sheet sheet = workbook.getSheetAt(0);
             int rowNum = 0;
             List<Student> studentList = Lists.newArrayList();
