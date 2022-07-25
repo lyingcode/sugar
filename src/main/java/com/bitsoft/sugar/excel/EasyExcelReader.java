@@ -22,7 +22,7 @@ public class EasyExcelReader {
         stopWatch.stop();
         log.info(stopWatch.prettyPrint());
         long freeMemory2 = Runtime.getRuntime().freeMemory();
-        log.info("写内容后剩余内存:{}},占用内存:{}", freeMemory2, freeMemory1 - freeMemory2);
+        log.info("写内容后剩余内存:{},占用内存:{}", freeMemory2, freeMemory1 - freeMemory2);
     }
 
     private static void batchProcess(List<Student> list) {
