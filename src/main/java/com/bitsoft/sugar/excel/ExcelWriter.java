@@ -1,5 +1,6 @@
 package com.bitsoft.sugar.excel;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -13,14 +14,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Slf4j
 public class ExcelWriter {
     public static void main(String[] args) {
-        Path file = Paths.get("D:\\demo.xlsx");
+        Path file = Paths.get("/Users/jameszhang/demo.xlsx");
         if (!Files.exists(file)) {
             try {
                 Files.createFile(file);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                log.error("创建文件失败",e);
             }
         }
         try (Workbook workbook = new SXSSFWorkbook(); OutputStream outputStream = Files.newOutputStream(file)) {
@@ -38,7 +40,7 @@ public class ExcelWriter {
             stopWatch.stop();
             stopWatch.start("写内容");
             long freeMemory1 = Runtime.getRuntime().freeMemory();
-            System.out.printf("写内容前剩余内存:%d", freeMemory1);
+            log.info("写内容前剩余内存:{}", freeMemory1);
             for (int i = 1; i < 1000000; i++) {
                 Row contentRow = sheet.createRow(i);
                 Cell cCell = contentRow.createCell(0);
@@ -49,8 +51,7 @@ public class ExcelWriter {
                 cCell.setCellValue("男");
             }
             long freeMemory2 = Runtime.getRuntime().freeMemory();
-            System.out.printf("写内容后剩余内存:%d,占用内存:%d", freeMemory2, freeMemory1 - freeMemory2);
-            System.out.println();
+            log.info("写内容后剩余内存:{},占用内存:{}}", freeMemory2, freeMemory1 - freeMemory2);
             stopWatch.stop();
             stopWatch.start("创建文件");
 
@@ -60,9 +61,9 @@ public class ExcelWriter {
             workbook.write(outputStream);
 
             stopWatch.stop();
-            System.out.println(stopWatch.prettyPrint());
+            log.info(stopWatch.prettyPrint());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("文件解析异常",e);
         }
 
     }
