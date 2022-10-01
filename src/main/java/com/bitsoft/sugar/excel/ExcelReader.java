@@ -2,6 +2,7 @@ package com.bitsoft.sugar.excel;
 
 import com.bitsoft.sugar.model.Student;
 import com.monitorjbl.xlsx.StreamingReader;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -17,27 +18,28 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.function.Function;
 
+@Slf4j
 public class ExcelReader {
     public static void main(String[] args) {
-        Path excelFile = Paths.get("D:\\demo.xlsx");
+        Path excelFile = Paths.get("/Users/jameszhang/demo.xlsx");
         if (!Files.exists(excelFile)) {
-            System.out.println("文件不存在" + excelFile.getFileName().toString());
+            log.info("文件不存在{}", excelFile.getFileName().toString());
             return;
         }
         StopWatch stopWatch = new StopWatch();
         stopWatch.start("开始文件读取");
         long freeMemory1 = Runtime.getRuntime().freeMemory();
-        System.out.printf("写内容前剩余内存:%d", freeMemory1);
-        System.out.println();
-        try (InputStream inputStream = Files.newInputStream(excelFile, StandardOpenOption.READ)) {
-            Workbook workbook = StreamingReader.builder().rowCacheSize(1000).bufferSize(1024*10).open(inputStream);
+        long maxFree1 = Runtime.getRuntime().maxMemory();
+        log.info("写内容前剩余内存:{},最大内存:{}", freeMemory1, maxFree1);
+        try (InputStream inputStream = Files.newInputStream(excelFile, StandardOpenOption.READ);
+             Workbook workbook = StreamingReader.builder().rowCacheSize(1000).bufferSize(1024 * 10).open(inputStream)) {
             Sheet sheet = workbook.getSheetAt(0);
             int rowNum = 0;
             List<Student> studentList = Lists.newArrayList();
             for (Row row : sheet) {
                 rowNum++;
                 if (rowNum == 1) {
-                    System.out.println("解析头文件");
+                    log.info("解析头文件");
                     parseHeader(row);
                 }
                 studentList.add(parseBody(row, ExcelReader::buildStudent));
@@ -46,28 +48,25 @@ public class ExcelReader {
                     studentList.clear();
                 }
             }
-            if (studentList.size() > 0) {
+            if (!studentList.isEmpty()) {
                 batchProcess(studentList);
                 studentList.clear();
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("文件解析异常",e);
         }
         long freeMemory2 = Runtime.getRuntime().freeMemory();
-        System.out.printf("写内容后剩余内存:%d,占用内存:%d", freeMemory2, freeMemory1 - freeMemory2);
-        System.out.println();
+        long maxFree2 = Runtime.getRuntime().maxMemory();
+        log.info("写内容后剩余内存:{},占用内存:{}},最大内存:{}}", freeMemory2, freeMemory1 - freeMemory2, maxFree2);
         stopWatch.stop();
-        System.out.println(stopWatch.prettyPrint());
+        log.info(stopWatch.prettyPrint());
     }
 
     private static void batchProcess(List<Student> studentList) {
-//        System.out.println("批量处理数组信息");
-//        if (studentList.size() > 0) {
-//            studentList.forEach(student -> {
-//                System.out.println(student);
-//            });
-//        }
-//        System.out.println("批量处理数组信息完成");
+        //do nothing here
+        if(log.isDebugEnabled()){
+            log.debug("size:{}",studentList.size());
+        }
     }
 
     private static Student parseBody(Row row, Function<Row, Student> converter) {
@@ -84,6 +83,6 @@ public class ExcelReader {
 
 
     private static void parseHeader(Row row) {
-        System.out.println("头信息处理:" + row);
+        log.info("头信息处理:{}" , row);
     }
 }
