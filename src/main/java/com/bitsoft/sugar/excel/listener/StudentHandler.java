@@ -42,27 +42,34 @@ public class StudentHandler implements XSSFSheetXMLHandler.SheetContentsHandler 
     }
 
     private void batchProcess(List<Student> list) {
-        if(log.isDebugEnabled()){
-            log.debug("size:{}",list.size());
+        if (log.isDebugEnabled()) {
+            log.debug("size:{}", list.size());
         }
     }
 
     /**
      * 每一个单元格回调
      *
-     * @param cellReference head
+     * @param cellReference  head
      * @param formattedValue 列值
-     * @param comment 备注信息
+     * @param comment        备注信息
      */
     @Override
     public void cell(String cellReference, String formattedValue, XSSFComment comment) {
         if (student != null) {
             String pref = cellReference.substring(0, 1);
             switch (pref) {
-                case "A" -> student.setId(formattedValue);
-                case "B" -> student.setName(formattedValue);
-                case "C" -> student.setSex(formattedValue);
-                default -> log.info("{}",pref);
+                case "A":
+                    student.setId(formattedValue);
+                    break;
+                case "B":
+                    student.setName(formattedValue);
+                    break;
+                case "C":
+                    student.setSex(formattedValue);
+                    break;
+                default:
+                    log.info("{}", pref);
             }
         }
     }
@@ -76,8 +83,8 @@ public class StudentHandler implements XSSFSheetXMLHandler.SheetContentsHandler 
             batchProcess(list);
             list.clear();
         }
-        if(log.isDebugEnabled()){
-            log.debug("totalRow:{}",totalRow);
+        if (log.isDebugEnabled()) {
+            log.debug("totalRow:{}", totalRow);
         }
     }
 }

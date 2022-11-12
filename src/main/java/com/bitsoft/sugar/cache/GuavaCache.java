@@ -16,9 +16,9 @@ public class GuavaCache {
                 .expireAfterWrite(3, TimeUnit.SECONDS)
                 .recordStats()
                 .removalListener(notification -> System.out.println(notification.getKey() + ":" + notification.getCause()))
-                .build(new CacheLoader<>() {
+                .build(new CacheLoader() {
                     @Override
-                    public Object load(String key) throws Exception {
+                    public Object load(Object key) throws Exception {
                         return Thread.currentThread().getName() + ":" + key;
                     }
                 });
