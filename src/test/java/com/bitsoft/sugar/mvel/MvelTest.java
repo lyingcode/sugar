@@ -2,12 +2,17 @@ package com.bitsoft.sugar.mvel;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import jdk.swing.interop.SwingInterOpUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.ehcache.impl.internal.store.loaderwriter.LocalLoaderWriterStore;
 import org.junit.jupiter.api.Test;
 import org.mvel2.MVEL;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +63,7 @@ public class MvelTest {
         result = MVEL.eval("simple.contains('c')", param);
         System.out.println(result);
         param.put("user", null);
-        System.out.println(MVEL.eval(" user != null ? user.name : ''", param));
+        System.out.println(MVEL.eval(" fruit.?name", param));
         System.out.println(MVEL.eval("fruit.name[0]", param));
         param.put("productType", "1");
         System.out.println(MVEL.eval("if (productType == 1){return '100001'}else if(productType== 2){return '100002';}else{return 'other';}", param));
@@ -78,6 +83,17 @@ public class MvelTest {
         Object result = MVEL.eval("result=A*B*C", param);
         BigDecimal rs = new BigDecimal(String.valueOf(result));
         System.out.println(rs);
+    }
+
+    @Test
+    public void timeCompare() {
+        Map<String, Object> param = Maps.newHashMap();
+        LocalDateTime t1 = LocalDateTime.now();
+        LocalDateTime t2 = LocalDateTime.now().with(TemporalAdjusters.firstDayOfMonth());
+        param.put("day1",t1.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        param.put("day2", t2.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        Object result = MVEL.eval("result = day2-day1",param);
+        System.out.println(result);
     }
 
     @Data

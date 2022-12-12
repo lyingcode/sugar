@@ -1,5 +1,6 @@
 package com.bitsoft.sugar.common;
 
+import com.bitsoft.sugar.UnitTestContextBase;
 import com.google.common.collect.Maps;
 import org.junit.jupiter.api.Test;
 
@@ -7,7 +8,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MapTest {
+public class MapTest extends UnitTestContextBase {
     @Test
     public void mapTest() {
         Map<String, String> map = Maps.newHashMap();
